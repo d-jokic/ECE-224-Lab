@@ -2,8 +2,8 @@
  * "Hello World" example.
  *
  * ECE 224 - Lab 1
- * Diana Jokic (20606918)
- * Lisa Zhang  (20525310)
+ * Diana Jokic 
+ * Lisa Zhang 
  *
  */
 
@@ -67,30 +67,30 @@ int main()
 
 #ifdef INTERRUPT
 
-	IOWR(STIMULUS_IN_BASE, 3, 0); 										//clears the req line
-	alt_irq_register(STIMULUS_IN_IRQ, (void *)0, response_ISR);			//register the interrupt
-	IOWR(STIMULUS_IN_BASE, 2, 0XFFFF);									//enables interrupt
+	IOWR(STIMULUS_IN_BASE, 3, 0); 									//clears the req line
+	alt_irq_register(STIMULUS_IN_IRQ, (void *)0, response_ISR);					//register the interrupt
+	IOWR(STIMULUS_IN_BASE, 2, 0XFFFF);								//enables interrupt
 
 	int period = PERIOD_START;
 	while(period < PERIOD_END + 1){
 		bckgnd_ctr = 0;
-		IOWR(EGM_BASE, 0, 0);											//enable EGM
-		IOWR(EGM_BASE, 2, period);										//set period of EGM
-		IOWR(EGM_BASE, 3, period/2);									//set pulse width of EGM
+		IOWR(EGM_BASE, 0, 0);									//disable EGM
+		IOWR(EGM_BASE, 2, period);								//set period of EGM
+		IOWR(EGM_BASE, 3, period/2);								//set pulse width of EGM
 
 		IOWR(LED_PIO_BASE, 0, 4);
 		IOWR(LED_PIO_BASE, 0, 0);
 
-		IOWR(EGM_BASE, 0, 1);											//enable EGM
+		IOWR(EGM_BASE, 0, 1);									//enable EGM
 
 
 		while((IORD(EGM_BASE, 1)& 0x0001)!= 0){							//while EGM is busy, run background code
 			background();
 		}
 
-		missed_pulses = IORD(EGM_BASE, 5);								//read missed pulses from EGM
-		latency = IORD(EGM_BASE, 4);									//read latency from EGM
-		IOWR(EGM_BASE, 0, 0);											//disable EGM
+		missed_pulses = IORD(EGM_BASE, 5);							//read missed pulses from EGM
+		latency = IORD(EGM_BASE, 4);								//read latency from EGM
+		IOWR(EGM_BASE, 0, 0);									//disable EGM
 
 		printf("%d, %d, %d, %d, %d \n", period, period/2, bckgnd_ctr, latency, missed_pulses);
 		period = period + 2;
@@ -106,17 +106,17 @@ int main()
 		alt_u8 characterization = 0;
 		alt_u16 bckgnd_ctr_polling = 0;
 
-		IOWR(EGM_BASE, 0, 0);											//disable EGM
-		IOWR(EGM_BASE, 2, period);										//set period of EGM
+		IOWR(EGM_BASE, 0, 0);										//disable EGM
+		IOWR(EGM_BASE, 2, period);									//set period of EGM
 		IOWR(EGM_BASE, 3, period/2);									//set pulse width of EGM
 
 		IOWR(LED_PIO_BASE, 0, 4);
 		IOWR(LED_PIO_BASE, 0, 0);
 
-		IOWR(EGM_BASE, 0, 1);											//enable EGM
+		IOWR(EGM_BASE, 0, 1);										//enable EGM
 
-		while(IORD(EGM_BASE, 1)){										//while EGM is busy, run background code and poll
-			if (characterization == 0){									//first loop; determine how many background tasks to do
+		while(IORD(EGM_BASE, 1)){									//while EGM is busy, run background code and poll
+			if (characterization == 0){								//first loop; determine how many background tasks to do
 				//wait for first EGM stimulus
 				while (!IORD(STIMULUS_IN_BASE,0)){}
 
@@ -129,15 +129,15 @@ int main()
 
 				//run as long as stimulus is high
 				while(curr && (IORD(EGM_BASE, 1))){
-					background();										//run background
-					bckgnd_ctr_polling++;								//increment counter
+					background();								//run background
+					bckgnd_ctr_polling++;							//increment counter
 					curr = IORD(STIMULUS_IN_BASE,0);					//read new value
 				}
 
 				//run as long as stimulus is low
 				while(!curr && (IORD(EGM_BASE, 1))){
-					background();										//run background
-					bckgnd_ctr_polling++;								//increment counter
+					background();								//run background
+					bckgnd_ctr_polling++;							//increment counter
 					curr = IORD(STIMULUS_IN_BASE,0);					//read new value
 				}
 
@@ -185,7 +185,7 @@ int main()
 
 		missed_pulses = IORD(EGM_BASE, 5);								//read missed pulses from EGM
 		latency = IORD(EGM_BASE, 4);									//read latency from EGM
-		IOWR(EGM_BASE, 0, 0);											//disable EGM
+		IOWR(EGM_BASE, 0, 0);										//disable EGM
 
 		printf("%d, %d, %d, %d, %d \n", period, period/2, bckgnd_ctr, latency, missed_pulses);
 		period = period + 2;
